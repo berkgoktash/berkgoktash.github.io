@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Berk Göktaş — Cybersecurity Engineer and Applied Machine Learning Researcher. SOC, SIEM detection engineering, DevOps automation, and graph-based alert prioritization research.">
+  <meta name="keywords" content="Berk Göktaş, cybersecurity, SIEM, QRadar, SOC, GNN, LSTM, DevOps, Kubernetes, Terraform">
+  <meta name="author" content="Berk Göktaş">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:title" content="Berk Göktaş | Cybersecurity & Machine Learning">
+  <meta property="og:description" content="Cybersecurity engineering, SIEM detection, DevOps automation, and GNN-LSTM security research.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <title>Berk Göktaş | Cybersecurity & Machine Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Berk Göktaş home">
+        <span class="brand-mark">BG</span>
+        <span class="brand-name">berk_goktas<span class="brand-dot">.dev</span></span>
+      </a>
+      <button class="nav-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="#experience">Experience</a>
+        <a href="#research">Research</a>
+        <a href="#projects">Projects</a>
+        <a href="#credentials">Credentials</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light theme" title="Switch theme">
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2.25M12 19.75V22M4.93 4.93l1.59 1.59M17.48 17.48l1.59 1.59M2 12h2.25M19.75 12H22M4.93 19.07l1.59-1.59M17.48 6.52l1.59-1.59"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.66 15.79A9 9 0 1 1 8.21 3.34 7 7 0 0 0 20.66 15.79Z"/></svg>
+        </button>
+        <a class="button button-small button-outline" href="assets/Berk_Goktas_CV.pdf" download>Download CV</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero section container" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> Cybersecurity engineering · applied machine learning</p>
+        <h1 id="hero-title">Security systems,<br><span class="gradient-text">built with evidence.</span></h1>
+        <p class="hero-lead">I am <strong>Berk Göktaş</strong>, a cybersecurity engineer and applied machine-learning researcher. I build detection systems, automate cloud-native infrastructure, and develop graph-based methods for reducing SOC alert fatigue.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#research">View research <span aria-hidden="true">↗</span></a>
+          <a class="button button-secondary" href="#experience">Explore experience</a>
+        </div>
+        <dl class="hero-meta" aria-label="Core profile">
+          <div><dt>Focus</dt><dd>SOC · SIEM · Applied ML</dd></div>
+          <div><dt>Base</dt><dd>İstanbul, Türkiye</dd></div>
+          <div><dt>Education</dt><dd>Boğaziçi University</dd></div>
+        </dl>
+      </div>
+      <div class="hero-visual" aria-label="Security telemetry visualization">
+        <div class="visual-topline"><span>LIVE / RESEARCH PROFILE</span><span>01—04</span></div>
+        <div class="graph-canvas">
+          <svg viewBox="0 0 600 450" role="img" aria-labelledby="graph-title graph-desc">
+            <title id="graph-title">Abstract security telemetry graph</title>
+            <desc id="graph-desc">A graph network connects alert, IP, rule and queue nodes.</desc>
+            <defs>
+              <linearGradient id="lineGradient" x1="0" x2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".15"/><stop offset="1" stop-color="#22d3ee" stop-opacity=".9"/></linearGradient>
+              <filter id="softGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g class="graph-lines">
+              <path d="M85 230L210 116L344 172L488 89"/><path d="M85 230L208 333L344 172L495 319"/><path d="M208 333L444 373L495 319"/><path d="M210 116L363 59L488 89"/><path d="M344 172L444 373"/><path d="M85 230L344 172"/><path d="M208 333L344 172"/>
+            </g>
+            <g class="graph-node muted"><circle cx="85" cy="230" r="11"/><circle cx="210" cy="116" r="11"/><circle cx="208" cy="333" r="11"/><circle cx="363" cy="59" r="8"/><circle cx="444" cy="373" r="8"/></g>
+            <g class="graph-node active" filter="url(#softGlow)"><circle cx="344" cy="172" r="17"/><circle cx="488" cy="89" r="14"/><circle cx="495" cy="319" r="14"/></g>
+            <g class="graph-label"><text x="56" y="262">ALERT_2342</text><text x="167" y="93">IP_NODE</text><text x="175" y="366">CLUSTER</text><text x="319" y="212">GNN</text><text x="458" y="65">RISK</text><text x="458" y="351">QUEUE</text></g>
+          </svg>
+        </div>
+        <div class="signal-row"><span class="signal-label">MODEL SIGNAL</span><span class="signal-value">HIGH PRIORITY</span><span class="signal-bar"><i></i></span></div>
+      </div>
+    </section>
+
+    <section class="impact section section-tight" aria-labelledby="impact-title">
+      <div class="container">
+        <div class="section-heading compact">
+          <p class="eyebrow">Selected impact</p>
+          <h2 id="impact-title">Operational scale meets research depth.</h2>
+        </div>
+        <div class="impact-grid">
+          <article class="impact-card"><div class="impact-number">200<span>+</span></div><p>Multi-tenant log sources onboarded and reconciled into IBM QRadar.</p></article>
+          <article class="impact-card"><div class="impact-number">300<span>+</span></div><p>Security reports and detection-rule updates using AQL and Regex.</p></article>
+          <article class="impact-card"><div class="impact-number">54</div><p>Student database-project groups evaluated as a CMPE 321 assistant.</p></article>
+          <article class="impact-card accent"><div class="impact-number">GNN<span>+</span>LSTM</div><p>Hybrid research architecture for ranked security-alert prioritization.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="experience" aria-labelledby="experience-title">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">Experience</p><h2 id="experience-title">Engineering work with production constraints.</h2></div>
+        <p>Security operations, detection engineering, infrastructure automation, and database instruction.</p>
+      </div>
+      <div class="timeline">
+        <article class="timeline-item">
+          <div class="timeline-date">FEB 2026 — JUN 2026</div>
+          <div class="timeline-content">
+            <div class="role-topline"><div><h3>Database Student Assistant <span>· CMPE 321</span></h3><p>Boğaziçi University · İstanbul, Türkiye</p></div><span class="role-index">01</span></div>
+            <ul>
+              <li>Designed, administered, and graded relational-database projects for 54 student groups.</li>
+              <li>Evaluated backend logic, database triggers, stored procedures, and live technical demonstrations.</li>
+              <li>Performed SQL-injection testing to verify input sanitization and parameterized query use.</li>
+            </ul>
+            <div class="tag-row"><span>SQL</span><span>Database Security</span><span>Stored Procedures</span></div>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">JUN 2025 — AUG 2025</div>
+          <div class="timeline-content">
+            <div class="role-topline"><div><h3>Cybersecurity & Software Engineering Intern</h3><p>Doğuş Teknoloji · İstanbul, Türkiye</p></div><span class="role-index">02</span></div>
+            <ul>
+              <li>Configured WinCollect and securely mapped 200+ multi-tenant log sources into IBM QRadar.</li>
+              <li>Developed and updated 300+ QRadar reports and detection rules with AQL and Regex, mapped to MITRE ATT&amp;CK.</li>
+              <li>Triaged phishing, DDoS, and malware incidents using Microsoft Defender EDR/XDR and Cortex XSOAR playbooks.</li>
+              <li>Built Apache Airflow DAGs and secure Spring Boot/Kotlin services using JWT authentication and Redis.</li>
+            </ul>
+            <div class="tag-row"><span>IBM QRadar</span><span>MITRE ATT&amp;CK</span><span>Defender XDR</span><span>Cortex XSOAR</span><span>Spring Boot</span></div>
+          </div>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">JUN 2024 — AUG 2024</div>
+          <div class="timeline-content">
+            <div class="role-topline"><div><h3>DevOps Intern</h3><p>Hepsiburada · İstanbul, Türkiye</p></div><span class="role-index">03</span></div>
+            <ul>
+              <li>Provisioned and managed multi-zone Kubernetes clusters with Terraform, Ansible, and Kubespray.</li>
+              <li>Automated GitLab CI pipelines and enforced production change-management controls with branch-protection webhooks.</li>
+              <li>Integrated HashiCorp Vault for dynamic secret management and diagnosed ImagePullBackOff, firewall, and access incidents.</li>
+            </ul>
+            <div class="tag-row"><span>Kubernetes</span><span>Terraform</span><span>Ansible</span><span>GitLab CI</span><span>Vault</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="research section" id="research" aria-labelledby="research-title">
+      <div class="container research-shell">
+        <div class="research-intro">
+          <p class="eyebrow">Featured research · 2025—2026</p>
+          <h2 id="research-title">Reducing alert fatigue in multi-SIEM environments.</h2>
+          <p>Lead research project at Boğaziçi University exploring a hybrid GNN-LSTM pipeline for converting correlated security telemetry into a ranked analyst queue.</p>
+          <div class="research-links">
+            <a class="text-link" href="#research-case-study">Read architecture <span aria-hidden="true">↓</span></a>
+            <a class="text-link" href="https://github.com/berkgoktash" target="_blank" rel="noreferrer">Open GitHub <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="research-statements">
+          <article><span>01 / Problem</span><h3>SOC teams face high-volume, repetitive telemetry where low-value alerts obscure urgent sequences.</h3></article>
+          <article><span>02 / Method</span><h3>Heterogeneous graph modeling, temporal sequence learning, and explainability for prioritized alert analysis.</h3></article>
+          <article><span>03 / Outcome</span><h3>A ranked queue that surfaces security-relevant behavior rather than treating alerts as independent events.</h3></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container case-study" id="research-case-study" aria-labelledby="case-title">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">Research case study</p><h2 id="case-title">From raw telemetry to ranked analyst action.</h2></div>
+        <p>The pipeline combines structural relationships, temporal context, and interpretable output rather than relying on a single flat classifier.</p>
+      </div>
+      <div class="architecture-grid">
+        <div class="pipeline-card">
+          <div class="pipeline-card-top"><span>PIPELINE / NB00 → NB04</span><span>01</span></div>
+          <ol class="pipeline">
+            <li><span class="pipeline-num">01</span><div><strong>Raw alerts</strong><small>Multi-SIEM telemetry and normalized OCSF attributes.</small></div></li>
+            <li><span class="pipeline-num">02</span><div><strong>Meta-alert clustering</strong><small>Contextual aggregation across time, IPs, tools, and alert types.</small></div></li>
+            <li><span class="pipeline-num">03</span><div><strong>Heterogeneous graph</strong><small>Alert, IP, type, and relationship nodes encode structural signal.</small></div></li>
+            <li><span class="pipeline-num">04</span><div><strong>GNN encoder</strong><small>GATv2 temporal attention and GraphSAGE structural propagation.</small></div></li>
+            <li><span class="pipeline-num">05</span><div><strong>LSTM + ranked queue</strong><small>Sequence modeling produces analyst-priority scoring and explanations.</small></div></li>
+          </ol>
+        </div>
+        <div class="research-side">
+          <article class="side-card"><span class="card-kicker">Why graph learning?</span><h3>Security alerts are not independent rows.</h3><p>IP co-occurrence, timing, tool agreement, cluster size, and alert type form relationships that flat models discard.</p></article>
+          <article class="side-card highlight"><span class="card-kicker">Interpretability</span><h3>Explanations support analyst trust.</h3><p>Temporal attention and SHAP-style feature analysis expose why the model prioritizes a sequence.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="projects" aria-labelledby="projects-title">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">Selected projects</p><h2 id="projects-title">Systems, detection, and data.</h2></div>
+        <p>Technical work presented as concise case studies rather than a generic skills dump.</p>
+      </div>
+      <div class="project-grid">
+        <article class="project-card featured-project">
+          <div class="project-topline"><span>RESEARCH / ML SECURITY</span><span>01</span></div>
+          <h3>Hybrid GNN-LSTM Security Alert Prioritization</h3>
+          <p>Graph-based and temporal deep-learning workflow for ranking correlated alerts and reducing analyst overload in multi-SIEM settings.</p>
+          <div class="project-footer"><div class="tag-row"><span>PyTorch</span><span>GNN</span><span>LSTM</span><span>XAI</span></div><a class="arrow-link" href="#research" aria-label="View GNN LSTM research">↗</a></div>
+        </article>
+        <article class="project-card">
+          <div class="project-topline"><span>DETECTION ENGINEERING</span><span>02</span></div>
+          <h3>QRadar Detection Engineering & Log Reconciliation</h3>
+          <p>Multi-tenant log onboarding, threat-detection logic, reporting, and ATT&amp;CK-aligned SIEM workflows in a SOC environment.</p>
+          <div class="project-footer"><div class="tag-row"><span>QRadar</span><span>AQL</span><span>Regex</span><span>SOC</span></div><span class="arrow-link muted-arrow">↗</span></div>
+        </article>
+        <article class="project-card">
+          <div class="project-topline"><span>PLATFORM ENGINEERING</span><span>03</span></div>
+          <h3>Production Kubernetes Automation</h3>
+          <p>Infrastructure provisioning and deployment control across multi-zone Kubernetes environments, with secrets and change-management safeguards.</p>
+          <div class="project-footer"><div class="tag-row"><span>Kubernetes</span><span>Terraform</span><span>Vault</span></div><span class="arrow-link muted-arrow">↗</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section skills-section" aria-labelledby="skills-title">
+      <div class="container">
+        <div class="section-heading split-heading"><div><p class="eyebrow">Technical capabilities</p><h2 id="skills-title">Built for the boundary between operations and research.</h2></div><p>Depth is organized by applied domain, not by an undifferentiated tool list.</p></div>
+        <div class="skills-grid">
+          <article><span class="cap-index">01</span><h3>Security Operations</h3><p>IBM QRadar · SIEM Engineering · AQL · Regex · MITRE ATT&amp;CK · Defender EDR/XDR · Cortex XSOAR · Threat Detection</p></article>
+          <article><span class="cap-index">02</span><h3>Cloud & DevOps</h3><p>Kubernetes · Terraform · Ansible · Kubespray · GitLab CI · HashiCorp Vault · Linux · Docker</p></article>
+          <article><span class="cap-index">03</span><h3>Machine Learning</h3><p>Python · PyTorch · GNNs · LSTM · XAI · SHAP · Graph-Based Alert Prioritization</p></article>
+          <article><span class="cap-index">04</span><h3>Software & Data</h3><p>SQL · Java · Kotlin · Spring Boot · Redis · Apache Airflow · Relational Databases</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="credentials" aria-labelledby="credentials-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow">Credentials</p><h2 id="credentials-title">Independent validation across security, cloud, and data.</h2></div><p>Computer Engineering, Boğaziçi University. GPA 3.64, High Honor. Exchange: Hong Kong University of Science and Technology.</p></div>
+      <div class="credentials-grid">
+        <span>ISC2 Certified in Cybersecurity</span><span>Google Cybersecurity Professional</span><span>IBM QRadar SIEM Foundation</span><span>IBM Cybersecurity Analyst</span><span>IBM Ethical Hacking</span><span>AWS Data Analytics</span><span>UC San Diego: Intro to Big Data</span><span>Northeastern: Data Privacy</span>
+      </div>
+      <div class="award-line"><span class="award-label">HONOR</span><p>Grand Prize Winner — <em>Kim Milyoner Olmak İster?</em> (Türkiye’s <em>Who Wants to Be a Millionaire</em>), 2024</p></div>
+    </section>
+
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="container contact-shell">
+        <div><p class="eyebrow">Contact</p><h2 id="contact-title">Security engineering,<br><span class="gradient-text">made inspectable.</span></h2></div>
+        <div class="contact-links">
+          <a href="mailto:berkgoktasedu@gmail.com"><span>EMAIL</span><strong>berkgoktasedu@gmail.com</strong><i>↗</i></a>
+          <a href="https://linkedin.com/in/berkgoktas" target="_blank" rel="noreferrer"><span>LINKEDIN</span><strong>linkedin.com/in/berkgoktas</strong><i>↗</i></a>
+          <a href="https://github.com/berkgoktash" target="_blank" rel="noreferrer"><span>GITHUB</span><strong>github.com/berkgoktash</strong><i>↗</i></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container footer-inner"><span>© 2026 Berk Göktaş</span><span>Built with semantic HTML, CSS, and JavaScript.</span><a href="#top">Back to top ↑</a></div></footer>
+
+  <div class="profile-guide" id="profile-guide">
+    <button class="guide-toggle" id="guide-toggle" aria-label="Open quick profile guide" aria-expanded="false" aria-controls="guide-panel">
+      <span class="guide-icon">⌘</span><span class="guide-label">Profile guide</span>
+    </button>
+    <section class="guide-panel" id="guide-panel" aria-label="Quick profile guide" hidden>
+      <header><div><p class="panel-kicker">QUICK PROFILE GUIDE</p><h2>Berk’s work, indexed.</h2></div><button class="guide-close" id="guide-close" aria-label="Close profile guide">×</button></header>
+      <div class="guide-suggestions" role="group" aria-label="Suggested topics">
+        <button data-prompt="experience">Experience</button><button data-prompt="research">Research</button><button data-prompt="stack">Tech stack</button><button data-prompt="contact">Contact</button>
+      </div>
+      <div class="guide-messages" id="guide-messages" aria-live="polite">
+        <div class="guide-message bot">Select a topic or ask a concise question about experience, research, skills, or contact details.</div>
+      </div>
+      <form class="guide-form" id="guide-form">
+        <label class="sr-only" for="guide-input">Ask about Berk’s profile</label>
+        <input id="guide-input" autocomplete="off" placeholder="Ask about the profile…">
+        <button type="submit" aria-label="Send question">↑</button>
+      </form>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
