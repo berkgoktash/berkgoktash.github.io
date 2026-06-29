@@ -1,30 +1,78 @@
 (() => {
-  const root = document.documentElement;
-  const themeToggle = document.getElementById('theme-toggle');
-  const savedTheme = localStorage.getItem('berk-portfolio-theme');
-  if (savedTheme) root.dataset.theme = savedTheme;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function updateThemeLabel() {
-    const isDark = root.dataset.theme === 'dark';
-    themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', isDark ? '#0b1220' : '#f6f8fb');
+  /* ---------- prevent browser scroll-restoration from fighting the boot screen ---------- */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  window.scrollTo(0, 0);
+
+  /* ---------- Commodore-style boot intro ---------- */
+  const boot = document.getElementById('boot');
+  const bootText = document.getElementById('boot-text');
+
+  function finishBoot() {
+    if (!boot) return;
+    window.scrollTo(0, 0);
+    boot.classList.add('done');
+    document.body.classList.remove('boot-active');
+    window.setTimeout(() => { boot.remove(); window.scrollTo(0, 0); }, 600);
   }
-  updateThemeLabel();
-  themeToggle.addEventListener('click', () => {
-    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('berk-portfolio-theme', root.dataset.theme);
-    updateThemeLabel();
-  });
 
+  if (boot && bootText && !reduceMotion) {
+    document.body.classList.add('boot-active');
+    const bootScreen = boot.querySelector('.boot-screen');
+    const prefix = 'READY.\n';
+    const typed = 'LOAD "PORTFOLIO"';
+    const fullText = 'READY.\nLOAD "PORTFOLIO"\n\nPRESS PLAY ON TAPE\nOK\n\nSEARCHING\nFOUND PORTFOLIO';
+
+    bootText.textContent = '';
+    const textNode = document.createTextNode(prefix);
+    const cursor = document.createElement('span');
+    cursor.className = 'blink';
+    cursor.textContent = '█';
+    bootText.appendChild(textNode);
+    bootText.appendChild(cursor);
+
+    let i = 0;
+    function type() {
+      if (i <= typed.length) {
+        textNode.nodeValue = prefix + typed.slice(0, i);
+        i += 1;
+        window.setTimeout(type, 55 + Math.random() * 55);
+      } else {
+        cursor.remove();
+        bootText.textContent = prefix + typed + '\n\nPRESS PLAY ON TAPE';
+        window.setTimeout(hideScreen, 900);
+      }
+    }
+    window.setTimeout(type, 700);
+
+    function hideScreen() {
+      bootScreen.classList.add('hidden');
+      window.setTimeout(showFull, 1200);
+    }
+    function showFull() {
+      bootText.textContent = fullText;
+      bootScreen.classList.remove('hidden');
+      window.setTimeout(finishBoot, 1400);
+    }
+  } else if (boot) {
+    finishBoot();
+  }
+
+  /* ---------- header scrolled state ---------- */
   const header = document.querySelector('.site-header');
-  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 8);
+  }, { passive: true });
 
+  /* ---------- mobile nav ---------- */
   const navToggle = document.querySelector('.nav-toggle');
   const navLinks = document.getElementById('nav-links');
   navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', String(isOpen));
-    navToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
   });
   navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
     navLinks.classList.remove('open');
@@ -32,79 +80,37 @@
     navToggle.setAttribute('aria-label', 'Open navigation');
   }));
 
-  const guideToggle = document.getElementById('guide-toggle');
-  const guidePanel = document.getElementById('guide-panel');
-  const guideClose = document.getElementById('guide-close');
-  const guideInput = document.getElementById('guide-input');
-  const messages = document.getElementById('guide-messages');
-  const guideForm = document.getElementById('guide-form');
-  const responses = [
-    {
-      tags: ['experience', 'work', 'intern', 'dogus', 'doğuş', 'hepsiburada', 'soc', 'qradar'],
-      response: 'Berk has worked in cybersecurity, software engineering, and DevOps. At Doğuş Teknoloji, the work included QRadar log onboarding, AQL/Regex detection logic, MITRE ATT&CK mapping, Defender XDR investigations, and Cortex XSOAR. At Hepsiburada, the work focused on Kubernetes, Terraform, Ansible, GitLab CI, and Vault.'
-    },
-    {
-      tags: ['research', 'gnn', 'lstm', 'alert', 'fatigue', 'machine learning', 'ml', 'ai', 'xai'],
-      response: 'The featured research project addresses multi-SIEM alert fatigue. It clusters alerts, models related entities in a heterogeneous graph, produces embeddings with GATv2 and GraphSAGE, then applies an LSTM to rank sequences for analyst review. The design also emphasizes interpretable prioritization.'
-    },
-    {
-      tags: ['stack', 'skills', 'tech', 'python', 'pytorch', 'kubernetes', 'terraform', 'security'],
-      response: 'Core stack: Python, PyTorch, GNNs, LSTMs, SQL, Linux, Java, Kotlin, Spring Boot, Redis, Apache Airflow, Kubernetes, Terraform, Ansible, GitLab CI, HashiCorp Vault, IBM QRadar, Microsoft Defender, Cortex XSOAR, and MITRE ATT&CK.'
-    },
-    {
-      tags: ['contact', 'email', 'linkedin', 'github', 'reach'],
-      response: 'Email: berkgoktasedu@gmail.com. LinkedIn: linkedin.com/in/berkgoktas. GitHub: github.com/berkgoktash.'
-    },
-    {
-      tags: ['education', 'university', 'bogazici', 'boğaziçi', 'gpa', 'exchange'],
-      response: 'Berk completed a BSc in Computer Engineering at Boğaziçi University with a 3.64 GPA and High Honor standing. He also completed a Computer Science exchange at the Hong Kong University of Science and Technology.'
-    }
-  ];
-
-  function openGuide() {
-    guidePanel.hidden = false;
-    guideToggle.setAttribute('aria-expanded', 'true');
-    setTimeout(() => guideInput.focus(), 0);
-  }
-  function closeGuide() {
-    guidePanel.hidden = true;
-    guideToggle.setAttribute('aria-expanded', 'false');
-    guideToggle.focus();
-  }
-  guideToggle.addEventListener('click', () => guidePanel.hidden ? openGuide() : closeGuide());
-  guideClose.addEventListener('click', closeGuide);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !guidePanel.hidden) closeGuide(); });
-
-  function appendMessage(text, role) {
-    const message = document.createElement('div');
-    message.className = `guide-message ${role}`;
-    message.textContent = text;
-    messages.appendChild(message);
-    messages.scrollTop = messages.scrollHeight;
+  /* ---------- scroll reveal with stagger ---------- */
+  const revealEls = document.querySelectorAll('.reveal');
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  } else {
+    const revealObserver = new IntersectionObserver((entries, obs) => {
+      const shown = [];
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { shown.push(entry.target); obs.unobserve(entry.target); }
+      });
+      shown.forEach((el, idx) => {
+        window.setTimeout(() => el.classList.add('is-visible'), idx * 90);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
   }
 
-  function findResponse(query) {
-    const normalized = query.toLocaleLowerCase('tr-TR');
-    let winner = null;
-    let score = 0;
-    for (const item of responses) {
-      const itemScore = item.tags.reduce((sum, tag) => sum + (normalized.includes(tag) ? 1 : 0), 0);
-      if (itemScore > score) { score = itemScore; winner = item; }
-    }
-    return winner ? winner.response : 'This guide is limited to the public portfolio profile. Use the site sections for experience, research, technical capabilities, credentials, and contact details.';
+  /* ---------- active nav highlighting ---------- */
+  const sections = document.querySelectorAll('main section[id]');
+  const linkFor = id => document.querySelector(`.nav-links a[href="#${id}"]`);
+  if ('IntersectionObserver' in window) {
+    const navObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const link = linkFor(entry.target.id);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.nav-links a.active').forEach(a => a.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { threshold: 0.5, rootMargin: '-30% 0px -50% 0px' });
+    sections.forEach(section => navObserver.observe(section));
   }
-
-  function processQuery(query) {
-    const clean = query.trim();
-    if (!clean) return;
-    appendMessage(clean, 'user');
-    const response = findResponse(clean);
-    window.setTimeout(() => appendMessage(response, 'bot'), 180);
-  }
-  guideForm.addEventListener('submit', event => {
-    event.preventDefault();
-    processQuery(guideInput.value);
-    guideInput.value = '';
-  });
-  document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => processQuery(button.dataset.prompt)));
 })();
