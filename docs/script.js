@@ -10,12 +10,25 @@
   const boot = document.getElementById('boot');
   const bootText = document.getElementById('boot-text');
 
+  const heroEnterEls = document.querySelectorAll('.hero-enter');
+
+  function triggerHeroEntrance() {
+    if (reduceMotion) {
+      heroEnterEls.forEach(el => el.classList.add('in'));
+      return;
+    }
+    heroEnterEls.forEach((el, i) => {
+      window.setTimeout(() => el.classList.add('in'), 80 + i * 75);
+    });
+  }
+
   function finishBoot() {
     if (!boot) return;
     window.scrollTo(0, 0);
     boot.classList.add('done');
     document.body.classList.remove('boot-active');
     window.setTimeout(() => { boot.remove(); window.scrollTo(0, 0); }, 600);
+    triggerHeroEntrance();
   }
 
   if (boot && bootText && !reduceMotion) {
@@ -33,31 +46,59 @@
     bootText.appendChild(textNode);
     bootText.appendChild(cursor);
 
+    const bootTimers = [];
+    let rafId = null;
+    let skipped = false;
+
+    function skipBoot() {
+      if (skipped) return;
+      skipped = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      bootTimers.forEach(id => clearTimeout(id));
+      document.removeEventListener('keydown', skipBoot);
+      boot.removeEventListener('click', skipBoot);
+      finishBoot();
+    }
+    document.addEventListener('keydown', skipBoot, { once: true });
+    boot.addEventListener('click', skipBoot, { once: true });
+
+    /* rAF-driven typewriter — characters align with paint frames, no setTimeout jitter */
+    const CHAR_INTERVAL = 85; // ms per character, consistent rhythm
     let i = 0;
-    function type() {
-      if (i <= typed.length) {
+    let lastCharTime = null;
+
+    function typeFrame(ts) {
+      if (lastCharTime === null) lastCharTime = ts;
+      if (ts - lastCharTime >= CHAR_INTERVAL) {
         textNode.nodeValue = prefix + typed.slice(0, i);
-        i += 1;
-        window.setTimeout(type, 55 + Math.random() * 55);
+        i++;
+        lastCharTime = ts;
+      }
+      if (i <= typed.length) {
+        rafId = requestAnimationFrame(typeFrame);
       } else {
         cursor.remove();
         bootText.textContent = prefix + typed + '\n\nPRESS PLAY ON TAPE';
-        window.setTimeout(hideScreen, 900);
+        bootTimers.push(window.setTimeout(hideScreen, 900));
       }
     }
-    window.setTimeout(type, 700);
+
+    bootTimers.push(window.setTimeout(() => {
+      rafId = requestAnimationFrame(typeFrame);
+    }, 700));
 
     function hideScreen() {
       bootScreen.classList.add('hidden');
-      window.setTimeout(showFull, 1200);
+      bootTimers.push(window.setTimeout(showFull, 1200));
     }
     function showFull() {
       bootText.textContent = fullText;
       bootScreen.classList.remove('hidden');
-      window.setTimeout(finishBoot, 1400);
+      bootTimers.push(window.setTimeout(finishBoot, 1400));
     }
-  } else if (boot) {
-    finishBoot();
+  } else {
+    triggerHeroEntrance();
+    if (boot) finishBoot();
   }
 
   /* ---------- header scrolled state ---------- */
@@ -112,5 +153,28 @@
       });
     }, { threshold: 0.5, rootMargin: '-30% 0px -50% 0px' });
     sections.forEach(section => navObserver.observe(section));
+  }
+
+  /* ---------- email copy-to-clipboard ---------- */
+  const emailLink = document.querySelector('a[href^="mailto:"]');
+  if (emailLink && navigator.clipboard) {
+    const address = emailLink.getAttribute('href').replace('mailto:', '');
+    let toastEl = null;
+    function showToast(msg) {
+      if (toastEl) toastEl.remove();
+      toastEl = document.createElement('div');
+      toastEl.className = 'toast';
+      toastEl.textContent = msg;
+      document.body.appendChild(toastEl);
+      requestAnimationFrame(() => requestAnimationFrame(() => toastEl.classList.add('show')));
+      window.setTimeout(() => {
+        toastEl.classList.remove('show');
+        window.setTimeout(() => { if (toastEl) { toastEl.remove(); toastEl = null; } }, 280);
+      }, 1800);
+    }
+    emailLink.addEventListener('click', e => {
+      e.preventDefault();
+      navigator.clipboard.writeText(address).then(() => showToast('Email copied ✓'));
+    });
   }
 })();

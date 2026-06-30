@@ -55,16 +55,16 @@
     <section class="hero" id="home" aria-labelledby="hero-title">
       <div class="hero-inner">
         <div class="hero-copy">
-          <p class="hero-tag"><span class="tag-cursor">&gt;</span> READY.</p>
+          <p class="hero-tag hero-enter"><span class="tag-cursor">&gt;</span> berkgoktas.com</p>
           <h1 id="hero-title" class="hero-name">
-            <span class="line line-1">BERK</span>
-            <span class="line line-2">GÖKTAŞ<span class="caret" aria-hidden="true"></span></span>
+            <span class="line line-1 hero-enter">BERK</span>
+            <span class="line line-2 hero-enter">GÖKTAŞ<span class="caret" aria-hidden="true"></span></span>
           </h1>
-          <p class="hero-role">Cybersecurity Engineer <span class="slash">/</span> Applied ML Researcher</p>
-          <p class="hero-sub">Boğaziçi University</p>
+          <p class="hero-role hero-enter">Cybersecurity Engineer <span class="slash">/</span> Applied ML Researcher</p>
+          <p class="hero-sub hero-enter">Boğaziçi University</p>
         </div>
 
-        <figure class="hero-portrait">
+        <figure class="hero-portrait hero-enter">
           <div class="portrait-frame">
             <img src="assets/portrait.jpg" alt="Portrait of Berk Göktaş"
                  onerror="this.style.display='none';this.parentElement.classList.add('no-image')">
@@ -76,7 +76,7 @@
         </figure>
       </div>
 
-      <a class="scroll-cue" href="#about" aria-label="Scroll to about">
+      <a class="scroll-cue hero-enter" href="#about" aria-label="Scroll to about">
         <span>SCROLL</span>
         <span class="scroll-line" aria-hidden="true"></span>
       </a>
@@ -205,21 +205,25 @@
 
         <div class="project-grid">
           <article class="project-card reveal">
+            <span class="card-num" aria-hidden="true">01</span>
             <h3>Multi-SIEM Alert Fatigue Research</h3>
             <p>Hybrid GNN-LSTM workflow for ranking correlated alerts and reducing analyst overload.</p>
             <div class="tags"><span>PyTorch</span><span>GNN</span><span>LSTM</span><span>XAI</span></div>
           </article>
           <article class="project-card reveal">
+            <span class="card-num" aria-hidden="true">02</span>
             <h3>QRadar Detection Engineering</h3>
             <p>Multi-tenant log onboarding, ATT&amp;CK-aligned detection logic, and SOC reporting.</p>
             <div class="tags"><span>QRadar</span><span>AQL</span><span>Regex</span><span>SOC</span></div>
           </article>
           <article class="project-card reveal">
+            <span class="card-num" aria-hidden="true">03</span>
             <h3>Kubernetes Automation</h3>
             <p>Multi-zone cluster provisioning with secrets management and change-management safeguards.</p>
             <div class="tags"><span>Kubernetes</span><span>Terraform</span><span>Vault</span></div>
           </article>
           <article class="project-card reveal">
+            <span class="card-num" aria-hidden="true">04</span>
             <h3>Database Systems / SQL Security</h3>
             <p>Relational design and SQL-injection testing across student database projects.</p>
             <div class="tags"><span>SQL</span><span>Triggers</span><span>Security</span></div>
@@ -272,7 +276,11 @@
 
   <footer class="footer">
     <span>© 2026 Berk Göktaş</span>
-    <a href="#top">Back to top ↑</a>
+    <div class="footer-links">
+      <a href="https://github.com/berkgoktash" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="https://linkedin.com/in/berkgoktas" target="_blank" rel="noreferrer">LinkedIn</a>
+    </div>
+    <a href="#top">↑ Top</a>
   </footer>
 
   <script src="script.js"></script>
