@@ -146,7 +146,7 @@ a { color: inherit; }
    ============================================================ */
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
   border-bottom: 1px solid transparent;
 }
 .site-header.scrolled {
@@ -505,6 +505,7 @@ a { color: inherit; }
   background: radial-gradient(350px circle at var(--light-x, 50%) var(--light-y, 50%),
     rgba(109, 226, 255, 0.13), rgba(255, 107, 181, 0.05) 42%, transparent 72%);
   transition: opacity 0.6s var(--ease);
+  will-change: opacity;
 }
 .hover-light.light-active::after { opacity: 1; }
 .brand, .footer a {
@@ -591,6 +592,12 @@ a:focus-visible, button:focus-visible {
 }
 .has-reading-stage > .reading-stage:focus-within { opacity: 1; }
 .final-chapter { min-height: var(--final-height, auto); display: flex; align-items: center; }
+/* Scroll-dimmed layers get their own compositor layer so brightness changes
+   are GPU opacity only, with no repaint of the text underneath. */
+.hero { opacity: var(--hero-opacity, 1); will-change: opacity; }
+.hero:focus-within { opacity: 1; }
+.reading-stage, .work-stage, .has-stage .work-stage > .section, .final-chapter > .container { will-change: opacity; }
+.grain, .scanlines { transform: translateZ(0); }
 .final-chapter > .container { opacity: var(--final-opacity, 1); }
 .final-chapter > .container:focus-within { opacity: 1; }
 .experience .timeline { overflow: visible; }
@@ -610,6 +617,7 @@ a:focus-visible, button:focus-visible {
   .experience .timeline { max-height: none; overflow: visible; }
   .reading-chapter.has-reading-stage { min-height: 0; padding: 32px 0; }
   .has-reading-stage > .reading-stage { position: static; opacity: 1 !important; }
+  .hero { opacity: 1 !important; }
   .final-chapter { min-height: 0; display: block; }
   .final-chapter > .container { opacity: 1 !important; }
 }

@@ -162,17 +162,44 @@
   let stageTop = 100;
   let step = 0;
   const clamp = value => Math.max(0, Math.min(1, value));
-  const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+  // Quintic ease (smootherstep): zero velocity *and* acceleration at both ends,
+  // so brightness starts and settles without a visible kink.
+  const smooth = value => { const t = clamp(value); return t * t * t * (t * (t * 6 - 15) + 10); };
+  const hero = document.getElementById('home');
+  const navTargets = ['about', 'experience', 'work', 'contact'].map(id => document.getElementById(id));
+  const navAnchors = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  // Geometry is measured once per layout change, never during scroll. Each frame
+  // only reads window.scrollY, so painting never forces a synchronous reflow.
+  const geo = { navBottom: 0, span: 1, total: 0, work: null, hero: null, final: null, reading: [], targets: [] };
+  const docBox = el => { const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, bottom: r.bottom + window.scrollY }; };
+  const last = new Map();
+  function setVar(el, name, value) {
+    const key = value.toFixed(3);
+    let cache = last.get(el);
+    if (!cache) { cache = {}; last.set(el, cache); }
+    if (cache[name] === key) return;
+    cache[name] = key;
+    el.style.setProperty(name, key);
+  }
   // Adjacent chapters share the same boundary and complementary fade curves.
   // The handoff starts at the viewport bottom and finishes below the fixed nav.
-  function boundaryOpacity(section) {
+  function boundaryOpacity(box, y, { enter = true, leave = true } = {}) {
     if (motionPreference.matches) return 1;
-    const { top, bottom } = section.getBoundingClientRect();
-    const navBottom = header.getBoundingClientRect().bottom;
-    const span = Math.max(1, window.innerHeight - navBottom);
-    const entering = smooth((window.innerHeight - top) / span);
-    const leaving = smooth((bottom - navBottom) / span);
+    const top = box.top - y, bottom = box.bottom - y;
+    const entering = enter ? smooth((window.innerHeight - top) / geo.span) : 1;
+    const leaving = leave ? smooth((bottom - geo.navBottom) / geo.span) : 1;
     return entering * leaving;
+  }
+  function measureGeometry() {
+    geo.navBottom = header.offsetHeight;
+    geo.span = Math.max(1, window.innerHeight - geo.navBottom);
+    geo.total = document.documentElement.scrollHeight - window.innerHeight;
+    geo.work = docBox(work);
+    geo.hero = docBox(hero);
+    geo.final = docBox(finalChapter);
+    geo.reading = readingChapters.map(({ section }) => docBox(section));
+    geo.targets = navTargets.map(el => docBox(el).top);
+    geo.workTop = work.offsetTop;
   }
   function measureChapters() {
     work.classList.add('measure-stage');
@@ -193,39 +220,48 @@
       chapter.section.style.setProperty('--reading-height', `${contentHeight + window.innerHeight * 1.1}px`);
     });
     finalChapter.style.setProperty('--final-height', `${Math.max(0, window.innerHeight - footer.offsetHeight)}px`);
-    queueChapters();
+    measureGeometry();
+    last.clear();
+    activePanel = -1;
+    currentNav = null;
+    paintChapters();
   }
+  let activePanel = -1;
+  let currentNav = null;
   function paintChapters() {
     frame = 0;
-    const position = clamp((window.scrollY - work.offsetTop + stageTop) / (step * (workPanels.length - 1))) * (workPanels.length - 1);
-    const active = Math.round(position);
-    stage.style.setProperty('--work-opacity', boundaryOpacity(work).toFixed(3));
-    if (!motionPreference.matches) {
-      const { top } = finalChapter.getBoundingClientRect();
-      const span = Math.max(1, window.innerHeight - header.getBoundingClientRect().bottom);
-      finalContent.style.setProperty('--final-opacity', smooth((window.innerHeight - top) / span).toFixed(3));
-    } else finalContent.style.removeProperty('--final-opacity');
-    readingChapters.forEach(({ section, hold }) => {
-      hold.style.setProperty('--reading-opacity', boundaryOpacity(section).toFixed(3));
-    });
+    const y = window.scrollY;
+    // Hero dims as About rises over it: the mirror of About's entering curve.
+    setVar(hero, '--hero-opacity', boundaryOpacity(geo.hero, y, { enter: false }));
+    setVar(stage, '--work-opacity', boundaryOpacity(geo.work, y));
+    readingChapters.forEach(({ hold }, index) => setVar(hold, '--reading-opacity', boundaryOpacity(geo.reading[index], y)));
+    setVar(finalContent, '--final-opacity', boundaryOpacity(geo.final, y, { leave: false }));
+    const position = clamp((y - geo.workTop + stageTop) / (step * (workPanels.length - 1))) * (workPanels.length - 1);
+    const active = stageEnabled ? Math.round(position) : -2;
     workPanels.forEach((panel, index) => {
-      const selected = !stageEnabled || index === active;
       const opacity = stageEnabled ? 1 - smooth((Math.abs(position - index) - 0.2) / 0.3) : 1;
-      panel.style.setProperty('--chapter-opacity', opacity.toFixed(3));
-      panel.classList.toggle('chapter-active', selected);
-      panel.inert = !selected;
-      panel.setAttribute('aria-hidden', String(!selected));
-      if (!selected && panel.contains(document.activeElement)) document.activeElement.blur();
+      setVar(panel, '--chapter-opacity', opacity);
     });
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    document.documentElement.style.setProperty('--page-progress', total > 0 ? clamp(window.scrollY / total) : 0);
-    const chapters = ['about', 'experience', 'work', 'contact'];
+    if (active !== activePanel) {
+      activePanel = active;
+      workPanels.forEach((panel, index) => {
+        const selected = !stageEnabled || index === active;
+        panel.classList.toggle('chapter-active', selected);
+        panel.inert = !selected;
+        panel.setAttribute('aria-hidden', String(!selected));
+        if (!selected && panel.contains(document.activeElement)) document.activeElement.blur();
+      });
+    }
+    setVar(document.documentElement, '--page-progress', geo.total > 0 ? clamp(y / geo.total) : 0);
     let current = '';
-    chapters.forEach(id => { if (document.getElementById(id).getBoundingClientRect().top < window.innerHeight * 0.5) current = id; });
-    document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
-      const target = link.hash === '#approach' ? 'work' : link.hash.slice(1);
-      link.classList.toggle('active', target === current);
-    });
+    geo.targets.forEach((top, index) => { if (top - y < window.innerHeight * 0.5) current = navTargets[index].id; });
+    if (current !== currentNav) {
+      currentNav = current;
+      navAnchors.forEach(link => {
+        const target = link.hash === '#approach' ? 'work' : link.hash.slice(1);
+        link.classList.toggle('active', target === current);
+      });
+    }
   }
   function queueChapters() { if (!frame) frame = requestAnimationFrame(paintChapters); }
   function goToWorkPanel(id) {
@@ -249,6 +285,12 @@
   window.addEventListener('resize', measureChapters, { passive: true });
   motionPreference.addEventListener('change', measureChapters);
   document.fonts.ready.then(measureChapters);
+  window.addEventListener('load', measureChapters);
+  // Images or late layout shifts change section positions; re-measure on the next frame.
+  let measureQueued = 0;
+  new ResizeObserver(() => {
+    if (!measureQueued) measureQueued = requestAnimationFrame(() => { measureQueued = 0; measureChapters(); });
+  }).observe(document.querySelector('main'));
   measureChapters();
 
   /* ---------- soft pointer-follow lighting; idle when the pointer leaves ---------- */
@@ -274,11 +316,23 @@
       el.style.setProperty('--light-y', `${y}px`);
       frame = Math.abs(targetX - x) + Math.abs(targetY - y) > 0.2 ? requestAnimationFrame(paint) : 0;
     }
+    let clientX = 0, clientY = 0;
+    function retarget() {
+      const rect = el.getBoundingClientRect();
+      targetX = clientX - rect.left;
+      targetY = clientY - rect.top;
+    }
+    // When the page scrolls under a resting cursor, the light keeps tracking it
+    // instead of riding along with the card.
+    window.addEventListener('scroll', () => {
+      if (!el.classList.contains('light-active')) return;
+      retarget();
+      if (!frame) { lastTime = 0; frame = requestAnimationFrame(paint); }
+    }, { passive: true });
     el.addEventListener('pointermove', event => {
       if (!pointerMedia.matches || motionMedia.matches) return;
-      const rect = el.getBoundingClientRect();
-      targetX = event.clientX - rect.left;
-      targetY = event.clientY - rect.top;
+      clientX = event.clientX; clientY = event.clientY;
+      retarget();
       if (!el.classList.contains('light-active')) {
         x = targetX; y = targetY;
         el.classList.add('light-active');
