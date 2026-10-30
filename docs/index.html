@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Berk Göktaş — Cybersecurity Engineer and Applied Machine Learning Researcher. SOC, SIEM detection engineering, DevOps automation, and graph-based alert prioritization research.">
-  <meta name="keywords" content="Berk Göktaş, cybersecurity, SIEM, QRadar, SOC, GNN, LSTM, DevOps, Kubernetes, Terraform">
+  <meta name="description" content="Berk Göktaş — Cybersecurity Engineer focused on SOC operations, SIEM detection engineering, incident response, and secure infrastructure automation.">
+  <meta name="keywords" content="Berk Göktaş, cybersecurity engineer, SIEM, QRadar, SOC, detection engineering, incident response, DevOps, Kubernetes, Terraform">
   <meta name="author" content="Berk Göktaş">
   <meta name="theme-color" content="#0c0c10">
-  <meta property="og:title" content="Berk Göktaş | Cybersecurity & Applied ML">
-  <meta property="og:description" content="Cybersecurity engineering, SIEM detection, DevOps automation, and GNN-LSTM security research.">
+  <meta property="og:title" content="Berk Göktaş | Cybersecurity Engineer">
+  <meta property="og:description" content="SOC operations, SIEM detection engineering, incident response, and secure infrastructure automation.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
-  <title>Berk Göktaş — Cybersecurity Engineer / Applied ML Researcher</title>
+  <title>Berk Göktaş — Cybersecurity Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -33,46 +33,42 @@
   <div class="grain" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
 
-  <header class="site-header" id="top">
+  <header class="site-header">
     <nav class="nav" aria-label="Primary navigation">
-      <a class="brand" href="#top" aria-label="Berk Göktaş home">Berk Göktaş</a>
+      <a class="brand" href="#top" aria-label="berkgoktas.com home">berkgoktas.com</a>
       <button class="nav-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
         <span></span><span></span><span></span>
       </button>
       <div class="nav-links" id="nav-links">
         <a href="#about">About</a>
         <a href="#experience">Experience</a>
-        <a href="#research">Research</a>
-        <a href="#projects">Projects</a>
+        <a href="#approach">Work &amp; Skills</a>
         <a href="#contact">Contact</a>
         <a class="nav-cv" href="assets/Berk_Goktas_CV.pdf" download>CV</a>
       </div>
     </nav>
   </header>
 
-  <main>
+  <main id="top">
     <!-- HERO -->
     <section class="hero" id="home" aria-labelledby="hero-title">
       <div class="hero-inner">
         <div class="hero-copy">
-          <p class="hero-tag hero-enter"><span class="tag-cursor">&gt;</span> berkgoktas.com</p>
           <h1 id="hero-title" class="hero-name">
             <span class="line line-1 hero-enter">BERK</span>
             <span class="line line-2 hero-enter">GÖKTAŞ<span class="caret" aria-hidden="true"></span></span>
           </h1>
-          <p class="hero-role hero-enter">Cybersecurity Engineer <span class="slash">/</span> Applied ML Researcher</p>
+          <p class="hero-role hero-enter">Cybersecurity Engineer</p>
           <p class="hero-sub hero-enter">Boğaziçi University</p>
+          <p class="hero-summary hero-enter">Turning security signals into action.<br>Building systems that hold up.</p>
+          <div class="hero-actions hero-enter">
+            <a class="button button-primary" href="#projects">Explore my work <span aria-hidden="true">↗</span></a>
+            <a class="button button-quiet" href="#contact">Get in touch <span aria-hidden="true">→</span></a>
+          </div>
         </div>
 
         <figure class="hero-portrait hero-enter">
-          <div class="portrait-frame">
-            <img src="assets/portrait.jpg" alt="Portrait of Berk Göktaş"
-                 onerror="this.style.display='none';this.parentElement.classList.add('no-image')">
-            <span class="portrait-placeholder" aria-hidden="true">BG</span>
-            <span class="portrait-tape portrait-tape-1"></span>
-            <span class="portrait-tape portrait-tape-2"></span>
-          </div>
-          <figcaption>İstanbul, Türkiye</figcaption>
+          <img src="assets/portrait-cutout.png" alt="Portrait of Berk Göktaş">
         </figure>
       </div>
 
@@ -87,14 +83,13 @@
       <div class="container">
         <p class="section-index reveal">01 — About</p>
         <h2 id="about-title" class="about-lead reveal">
-          I work at the intersection of <em>cybersecurity</em>, <em>detection engineering</em>,
-          and <em>machine learning</em>.
+          I build <em>security detections</em>, investigate <em>threats</em>,
+          and strengthen the <em>infrastructure</em> behind them.
         </h2>
         <p class="about-body reveal">
-          My work spans SOC operations, SIEM engineering, and cloud-native infrastructure,
-          alongside research on reducing analyst alert fatigue through graph-based learning.
-          I care about systems that hold up under production constraints and decisions that
-          can be inspected, not just trusted.
+          My work spans SOC operations, SIEM engineering, incident triage, and cloud-native
+          infrastructure. I turn raw telemetry into actionable detections and build automation
+          that makes security operations more reliable and easier to investigate.
         </p>
       </div>
     </section>
@@ -157,41 +152,41 @@
       </div>
     </section>
 
-    <!-- RESEARCH -->
-    <section class="section research" id="research" aria-labelledby="research-title">
+    <!-- APPROACH -->
+    <section class="section research" id="approach" aria-labelledby="approach-title">
       <div class="container">
-        <p class="section-index reveal">03 — Research</p>
-        <h2 id="research-title" class="section-title reveal">Reducing alert fatigue with graph learning.</h2>
+        <p class="section-index reveal">03 — Approach</p>
+        <h2 id="approach-title" class="section-title reveal">From telemetry to action.</h2>
         <p class="research-intro reveal">
-          A lead research project at Boğaziçi University: a hybrid GNN-LSTM pipeline that turns
-          correlated, multi-SIEM telemetry into a ranked analyst queue — surfacing behavior,
-          not isolated alerts.
+          Effective security operations start with trustworthy log collection, useful detection
+          logic, and a clear path from an alert to an investigation. My experience covers that
+          workflow across QRadar, endpoint tooling, and response automation.
         </p>
 
-        <div class="pipeline reveal" role="img" aria-label="Pipeline: Raw alerts to Graph construction to GNN to LSTM to Ranked queue">
-          <span class="pipe-node">Raw Alerts</span>
+        <div class="pipeline reveal" role="img" aria-label="Security workflow: Log sources to SIEM correlation to Detection rules to Incident triage to Response">
+          <span class="pipe-node">Log Sources</span>
           <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">Graph Construction</span>
+          <span class="pipe-node">SIEM Correlation</span>
           <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">GNN</span>
+          <span class="pipe-node">Detection Rules</span>
           <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">LSTM</span>
+          <span class="pipe-node">Incident Triage</span>
           <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node accent">Ranked Queue</span>
+          <span class="pipe-node accent">Response</span>
         </div>
 
         <div class="research-blocks">
           <article class="reveal">
-            <span class="block-label">Problem</span>
-            <p>SOC teams face high-volume, repetitive telemetry where low-value alerts bury the urgent sequences.</p>
+            <span class="block-label">Collect</span>
+            <p>Onboard and normalize log sources so analysts can trust the evidence behind each alert.</p>
           </article>
           <article class="reveal">
-            <span class="block-label">Method</span>
-            <p>Heterogeneous graph modeling with GATv2 and GraphSAGE, temporal sequence learning, and explainable scoring.</p>
+            <span class="block-label">Detect</span>
+            <p>Write and tune QRadar rules and reports with AQL and Regex, aligned to MITRE ATT&amp;CK.</p>
           </article>
           <article class="reveal">
-            <span class="block-label">Result</span>
-            <p>A ranked queue that prioritizes security-relevant behavior instead of treating alerts as independent events.</p>
+            <span class="block-label">Respond</span>
+            <p>Investigate phishing, DDoS, and malware activity with endpoint and response tooling.</p>
           </article>
         </div>
       </div>
@@ -206,9 +201,9 @@
         <div class="project-grid">
           <article class="project-card reveal">
             <span class="card-num" aria-hidden="true">01</span>
-            <h3>Multi-SIEM Alert Fatigue Research</h3>
-            <p>Hybrid GNN-LSTM workflow for ranking correlated alerts and reducing analyst overload.</p>
-            <div class="tags"><span>PyTorch</span><span>GNN</span><span>LSTM</span><span>XAI</span></div>
+            <h3>Security Incident Triage</h3>
+            <p>Investigation of phishing, DDoS, and malware incidents using endpoint and response tooling.</p>
+            <div class="tags"><span>Defender XDR</span><span>Cortex XSOAR</span><span>SOC</span></div>
           </article>
           <article class="project-card reveal">
             <span class="card-num" aria-hidden="true">02</span>
@@ -248,8 +243,8 @@
             <p>Kubernetes · Terraform · Ansible · Kubespray · GitLab CI · HashiCorp Vault · Linux · Docker</p>
           </article>
           <article class="reveal">
-            <h3>Machine Learning</h3>
-            <p>Python · PyTorch · GNNs · LSTM · XAI · SHAP · Graph-Based Alert Prioritization</p>
+            <h3>Incident Response</h3>
+            <p>Phishing Triage · Malware Investigation · DDoS Analysis · Defender EDR/XDR · Cortex XSOAR</p>
           </article>
           <article class="reveal">
             <h3>Programming</h3>
