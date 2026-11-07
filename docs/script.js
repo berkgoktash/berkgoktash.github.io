@@ -111,11 +111,9 @@
     if (boot) finishBoot();
   }
 
-  /* ---------- header scrolled state ---------- */
+  /* ---------- header scrolled state (painted with the chapters, once per frame) ---------- */
   const header = document.querySelector('.site-header');
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 8);
-  }, { passive: true });
+  let headerScrolled = null;
 
   /* ---------- mobile nav ---------- */
   const navToggle = document.querySelector('.nav-toggle');
@@ -158,6 +156,26 @@
     return { section, content, hold, pin: 90, enabled: false };
   });
   let frame = 0;
+  // Choreography is laid out against a stable viewport height. Mobile browsers
+  // collapse and restore their toolbars while scrolling; re-laying the pinned
+  // chapters on that height-only change made content jump under the reader.
+  const coarsePointer = window.matchMedia('(pointer: coarse)');
+  let viewW = window.innerWidth;
+  let viewH = window.innerHeight;
+  function viewportChanged() {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (w === viewW && h === viewH) return false;
+    if (w === viewW && coarsePointer.matches && Math.abs(h - viewH) < 160) return false;
+    viewW = w; viewH = h;
+    return true;
+  }
+  // Shared-stage panels hold at full brightness within ±HOLD of their scroll
+  // position and dim over FADE, meeting at the midpoint without overlapping text.
+  // The curve settles softly at full brightness (zero velocity and acceleration)
+  // but leaves black quickly, so the handoff is a brief dissolve through dim
+  // rather than a long empty screen (smootherstep lingers near zero).
+  const PANEL_HOLD = 0.2, PANEL_FADE = 0.3;
+  const settle = value => { const u = clamp(value); return 1 - (1 - u) ** 3; };
   let stageEnabled = false;
   let stageTop = 100;
   let step = 0;
@@ -186,14 +204,14 @@
   function boundaryOpacity(box, y, { enter = true, leave = true } = {}) {
     if (motionPreference.matches) return 1;
     const top = box.top - y, bottom = box.bottom - y;
-    const entering = enter ? smooth((window.innerHeight - top) / geo.span) : 1;
+    const entering = enter ? smooth((viewH - top) / geo.span) : 1;
     const leaving = leave ? smooth((bottom - geo.navBottom) / geo.span) : 1;
     return entering * leaving;
   }
   function measureGeometry() {
     geo.navBottom = header.offsetHeight;
-    geo.span = Math.max(1, window.innerHeight - geo.navBottom);
-    geo.total = document.documentElement.scrollHeight - window.innerHeight;
+    geo.span = Math.max(1, viewH - geo.navBottom);
+    geo.total = document.documentElement.scrollHeight - viewH;
     geo.work = docBox(work);
     geo.hero = docBox(hero);
     geo.final = docBox(finalChapter);
@@ -205,21 +223,21 @@
     work.classList.add('measure-stage');
     const height = Math.max(...workPanels.map(panel => panel.scrollHeight));
     work.classList.remove('measure-stage');
-    stageEnabled = !motionPreference.matches && height <= window.innerHeight - 130 && window.innerWidth > 920;
-    stageTop = Math.max(90, (window.innerHeight - height) / 2);
-    step = window.innerHeight * 0.85;
+    stageEnabled = !motionPreference.matches && height <= viewH - 130 && window.innerWidth > 920;
+    stageTop = Math.max(90, (viewH - height) / 2);
+    step = viewH * 0.85;
     work.classList.toggle('has-stage', stageEnabled);
     work.style.setProperty('--stage-top', `${stageTop}px`);
-    work.style.setProperty('--chapter-height', `${height + step * (workPanels.length - 1) + window.innerHeight * 0.4}px`);
+    work.style.setProperty('--chapter-height', `${height + step * (workPanels.length - 1) + viewH * 0.4}px`);
     readingChapters.forEach(chapter => {
       const contentHeight = chapter.content.offsetHeight;
-      chapter.enabled = !motionPreference.matches && contentHeight <= window.innerHeight - 130;
-      chapter.pin = Math.max(90, (window.innerHeight - contentHeight) / 2);
+      chapter.enabled = !motionPreference.matches && contentHeight <= viewH - 130;
+      chapter.pin = Math.max(90, (viewH - contentHeight) / 2);
       chapter.section.classList.toggle('has-reading-stage', chapter.enabled);
       chapter.section.style.setProperty('--reading-top', `${chapter.pin}px`);
-      chapter.section.style.setProperty('--reading-height', `${contentHeight + window.innerHeight * 1.1}px`);
+      chapter.section.style.setProperty('--reading-height', `${contentHeight + viewH * 1.1}px`);
     });
-    finalChapter.style.setProperty('--final-height', `${Math.max(0, window.innerHeight - footer.offsetHeight)}px`);
+    finalChapter.style.setProperty('--final-height', `${Math.max(0, viewH - footer.offsetHeight)}px`);
     measureGeometry();
     last.clear();
     activePanel = -1;
@@ -231,6 +249,8 @@
   function paintChapters() {
     frame = 0;
     const y = window.scrollY;
+    const scrolled = y > 8;
+    if (scrolled !== headerScrolled) { headerScrolled = scrolled; header.classList.toggle('scrolled', scrolled); }
     // Hero dims as About rises over it: the mirror of About's entering curve.
     setVar(hero, '--hero-opacity', boundaryOpacity(geo.hero, y, { enter: false }));
     setVar(stage, '--work-opacity', boundaryOpacity(geo.work, y));
@@ -239,8 +259,11 @@
     const position = clamp((y - geo.workTop + stageTop) / (step * (workPanels.length - 1))) * (workPanels.length - 1);
     const active = stageEnabled ? Math.round(position) : -2;
     workPanels.forEach((panel, index) => {
-      const opacity = stageEnabled ? 1 - smooth((Math.abs(position - index) - 0.2) / 0.3) : 1;
+      const opacity = stageEnabled ? settle((PANEL_HOLD + PANEL_FADE - Math.abs(position - index)) / PANEL_FADE) : 1;
       setVar(panel, '--chapter-opacity', opacity);
+      // A panel is painted whenever it carries any light; only the active one is interactive.
+      const lit = !stageEnabled || opacity > 0.002;
+      if (panel.classList.contains('chapter-lit') !== lit) panel.classList.toggle('chapter-lit', lit);
     });
     if (active !== activePanel) {
       activePanel = active;
@@ -254,7 +277,7 @@
     }
     setVar(document.documentElement, '--page-progress', geo.total > 0 ? clamp(y / geo.total) : 0);
     let current = '';
-    geo.targets.forEach((top, index) => { if (top - y < window.innerHeight * 0.5) current = navTargets[index].id; });
+    geo.targets.forEach((top, index) => { if (top - y < viewH * 0.5) current = navTargets[index].id; });
     if (current !== currentNav) {
       currentNav = current;
       navAnchors.forEach(link => {
@@ -267,12 +290,12 @@
   function goToWorkPanel(id) {
     const reading = readingChapters.find(chapter => chapter.section.id === id && chapter.enabled);
     if (reading) {
-      window.scrollTo({ top: reading.section.offsetTop - reading.pin + window.innerHeight * 0.3, behavior: 'smooth' });
+      window.scrollTo({ top: reading.section.offsetTop - reading.pin + viewH * 0.3, behavior: 'smooth' });
       return true;
     }
     const index = workPanels.findIndex(panel => panel.id === id);
     if (!stageEnabled || index < 0) return false;
-    window.scrollTo({ top: work.offsetTop - stageTop + step * index + (index === 0 ? window.innerHeight * 0.2 : 0), behavior: 'smooth' });
+    window.scrollTo({ top: work.offsetTop - stageTop + step * index + (index === 0 ? viewH * 0.2 : 0), behavior: 'smooth' });
     return true;
   }
   document.addEventListener('click', event => {
@@ -282,15 +305,17 @@
   });
   window.addEventListener('popstate', () => goToWorkPanel(location.hash.slice(1)));
   window.addEventListener('scroll', queueChapters, { passive: true });
-  window.addEventListener('resize', measureChapters, { passive: true });
+  // Images, fonts, or a real viewport change move section positions; re-measure
+  // at most once per frame instead of synchronously on every resize event.
+  let measureQueued = 0;
+  function queueMeasure() {
+    if (!measureQueued) measureQueued = requestAnimationFrame(() => { measureQueued = 0; measureChapters(); });
+  }
+  window.addEventListener('resize', () => { if (viewportChanged()) queueMeasure(); }, { passive: true });
   motionPreference.addEventListener('change', measureChapters);
   document.fonts.ready.then(measureChapters);
   window.addEventListener('load', measureChapters);
-  // Images or late layout shifts change section positions; re-measure on the next frame.
-  let measureQueued = 0;
-  new ResizeObserver(() => {
-    if (!measureQueued) measureQueued = requestAnimationFrame(() => { measureQueued = 0; measureChapters(); });
-  }).observe(document.querySelector('main'));
+  new ResizeObserver(queueMeasure).observe(document.querySelector('main'));
   measureChapters();
 
   /* ---------- soft pointer-follow lighting; idle when the pointer leaves ---------- */

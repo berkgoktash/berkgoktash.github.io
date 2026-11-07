@@ -70,10 +70,14 @@ a { color: inherit; }
 .skip-link:focus { top: 16px; }
 
 /* ---------- texture layers ---------- */
+/* Both texture layers use normal blending: a fixed full-screen mix-blend-mode
+   layer forces the whole page to be re-blended on every scrolled frame.
+   The grain is the same turbulence expressed as dark alpha noise, tuned to
+   match the previous multiply result; the scanlines were already pure black,
+   where multiply and normal blending are mathematically identical. */
 .grain {
   position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.08;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -.1 -.1 -.1 .3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .scanlines {
   position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0.14;
@@ -84,7 +88,6 @@ a { color: inherit; }
     rgba(0, 0, 0, 0.18) 3px,
     transparent 4px
   );
-  mix-blend-mode: multiply;
 }
 
 /* ============================================================
@@ -129,9 +132,10 @@ a { color: inherit; }
 .boot-text .blink { animation: blink 0.8s steps(1) infinite; }
 
 @keyframes blink { 50% { opacity: 0; } }
+/* Travels exactly one gradient period, so the loop restarts without a flip. */
 @keyframes scrollFlow {
-  0%   { background-position: 0 -100%; }
-  100% { background-position: 0 200%; }
+  from { transform: translateY(0); }
+  to   { transform: translateY(-66.6667%); }
 }
 
 /* hero entrance */
@@ -263,10 +267,14 @@ a { color: inherit; }
   font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.2em;
 }
 .scroll-line {
+  position: relative; overflow: hidden;
   width: 1px; height: 42px;
-  background: linear-gradient(var(--pink), transparent, var(--pink));
-  background-size: 1px 200%;
+}
+.scroll-line::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 300%;
+  background: linear-gradient(var(--pink), transparent, var(--pink)) 0 0 / 100% 66.6667% repeat-y;
   animation: scrollFlow 1.6s ease-in-out infinite;
+  will-change: transform;
 }
 .scroll-cue:hover { color: var(--pink); }
 
@@ -498,16 +506,19 @@ a { color: inherit; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* Lighting overlays never intercept links or change element dimensions. */
-.hover-light { position: relative; isolation: isolate; }
+/* The light is painted once (a 350px-radius glow) and then only translated,
+   so following the cursor is a compositor move rather than a repaint. */
+.hover-light { position: relative; isolation: isolate; overflow: hidden; overflow: clip; }
 .hover-light::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 700px; height: 700px; margin: -350px 0 0 -350px;
   pointer-events: none; opacity: 0; z-index: -1;
-  background: radial-gradient(350px circle at var(--light-x, 50%) var(--light-y, 50%),
+  background: radial-gradient(circle closest-side,
     rgba(109, 226, 255, 0.13), rgba(255, 107, 181, 0.05) 42%, transparent 72%);
+  transform: translate3d(var(--light-x, 0px), var(--light-y, 0px), 0);
   transition: opacity 0.6s var(--ease);
-  will-change: opacity;
 }
-.hover-light.light-active::after { opacity: 1; }
+.hover-light.light-active::after { opacity: 1; will-change: transform, opacity; }
 .brand, .footer a {
   transition: color 0.3s ease, text-shadow 0.45s ease;
 }
@@ -559,7 +570,7 @@ a:focus-visible, button:focus-visible {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-enter { opacity: 1; transform: none; transition: none; }
-  .caret, .boot-text .blink, .scroll-line { animation: none; }
+  .caret, .boot-text .blink, .scroll-line::before { animation: none; }
   .scanlines { display: none; }
 }
 
@@ -584,7 +595,8 @@ a:focus-visible, button:focus-visible {
 .has-stage .work-stage > .section {
   opacity: var(--chapter-opacity, 0); visibility: hidden; pointer-events: none;
 }
-.has-stage .work-stage > .chapter-active { visibility: visible; pointer-events: auto; }
+.has-stage .work-stage > .chapter-lit { visibility: visible; }
+.has-stage .work-stage > .chapter-active { visibility: visible; pointer-events: auto; z-index: 1; }
 .has-stage .work-stage > .section:focus-within { opacity: 1; }
 .reading-chapter.has-reading-stage { min-height: var(--reading-height); padding: 0; }
 .has-reading-stage > .reading-stage {
