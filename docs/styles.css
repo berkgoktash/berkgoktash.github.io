@@ -598,7 +598,9 @@ a:focus-visible, button:focus-visible {
 .has-stage .work-stage > .chapter-lit { visibility: visible; }
 .has-stage .work-stage > .chapter-active { visibility: visible; pointer-events: auto; z-index: 1; }
 .has-stage .work-stage > .section:focus-within { opacity: 1; }
-.reading-chapter.has-reading-stage { min-height: var(--reading-height); padding: 0; }
+/* Bottom padding ends the pin early, so the next chapter rises with normal
+   section spacing instead of touching the pinned content. */
+.reading-chapter.has-reading-stage { min-height: var(--reading-height); padding: 0 0 var(--section-space); }
 .has-reading-stage > .reading-stage {
   position: sticky; top: var(--reading-top); opacity: var(--reading-opacity, 1);
 }
@@ -613,6 +615,15 @@ a:focus-visible, button:focus-visible {
 .final-chapter > .container { opacity: var(--final-opacity, 1); }
 .final-chapter > .container:focus-within { opacity: 1; }
 .experience .timeline { overflow: visible; }
+/* Experience stage: heading stays pinned on the left while the timeline cards
+   share one cell on the right and hand off with brightness only. */
+.has-timeline-stage .timeline { display: grid; }
+.has-timeline-stage .timeline-item {
+  grid-area: 1 / 1; border-bottom: 1px solid var(--line);
+  opacity: var(--item-opacity, 0); visibility: hidden; will-change: opacity;
+}
+.has-timeline-stage .timeline-item.item-lit { visibility: visible; }
+.has-timeline-stage .timeline-item.item-active { z-index: 1; }
 @media (min-width: 921px) {
   .experience .container { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--space-6); align-items: start; }
   .experience-heading { position: static; }
@@ -627,6 +638,9 @@ a:focus-visible, button:focus-visible {
   .has-stage .work-stage > .section { visibility: visible; opacity: 1 !important; padding: 32px 0; }
   .experience-heading { position: static; }
   .experience .timeline { max-height: none; overflow: visible; }
+  .has-timeline-stage .timeline { display: block; }
+  .has-timeline-stage .timeline-item { visibility: visible; opacity: 1 !important; border-bottom: 0; }
+  .has-timeline-stage .timeline-item:last-child { border-bottom: 1px solid var(--line); }
   .reading-chapter.has-reading-stage { min-height: 0; padding: 32px 0; }
   .has-reading-stage > .reading-stage { position: static; opacity: 1 !important; }
   .hero { opacity: 1 !important; }

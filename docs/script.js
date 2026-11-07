@@ -153,8 +153,14 @@
     const hold = document.createElement('div'); hold.className = 'reading-stage';
     section.prepend(hold); hold.append(content);
     section.classList.add('reading-chapter');
-    return { section, content, hold, pin: 90, enabled: false };
+    // Experience stacks its timeline cards in one place beside the pinned heading;
+    // they take turns at full brightness, like the shared Work stage.
+    const items = id === 'experience' ? [...section.querySelectorAll('.timeline-item')] : [];
+    return { section, content, hold, items, pin: 90, enabled: false, staged: false, itemStep: 0, activeItem: -1 };
   });
+  // Scroll held at full brightness once a reading chapter has arrived (fraction of
+  // the viewport), and scroll spent on each Experience card handoff.
+  const READING_HOLD = 0.25, ITEM_STEP = 0.5;
   let frame = 0;
   // Choreography is laid out against a stable viewport height. Mobile browsers
   // collapse and restore their toolbars while scrolling; re-laying the pinned
@@ -229,13 +235,29 @@
     work.classList.toggle('has-stage', stageEnabled);
     work.style.setProperty('--stage-top', `${stageTop}px`);
     work.style.setProperty('--chapter-height', `${height + step * (workPanels.length - 1) + viewH * 0.4}px`);
+    const span = Math.max(1, viewH - header.offsetHeight);
     readingChapters.forEach(chapter => {
-      const contentHeight = chapter.content.offsetHeight;
-      chapter.enabled = !motionPreference.matches && contentHeight <= viewH - 130;
+      const fits = height => !motionPreference.matches && height <= viewH - 130;
+      const canStage = chapter.items.length > 1 && !motionPreference.matches && window.innerWidth > 920;
+      chapter.section.classList.toggle('has-timeline-stage', canStage);
+      let contentHeight = chapter.content.offsetHeight;
+      if (canStage && !fits(contentHeight)) {
+        chapter.section.classList.remove('has-timeline-stage');
+        contentHeight = chapter.content.offsetHeight;
+      }
+      chapter.enabled = fits(contentHeight);
+      chapter.staged = canStage && chapter.enabled;
+      chapter.itemStep = chapter.staged ? viewH * ITEM_STEP : 0;
+      chapter.activeItem = -1;
       chapter.pin = Math.max(90, (viewH - contentHeight) / 2);
+      // Full brightness lasts (height - span): the entering fade ends as the section
+      // top reaches the nav, the leaving fade starts as its bottom meets the viewport bottom.
+      const handoffs = chapter.itemStep * Math.max(0, chapter.items.length - 1);
       chapter.section.classList.toggle('has-reading-stage', chapter.enabled);
+      const gap = chapter.enabled ? parseFloat(getComputedStyle(chapter.section).paddingBottom) || 0 : 0;
+      const sectionHeight = Math.max(contentHeight + chapter.pin + gap, span + viewH * READING_HOLD) + handoffs;
       chapter.section.style.setProperty('--reading-top', `${chapter.pin}px`);
-      chapter.section.style.setProperty('--reading-height', `${contentHeight + viewH * 1.1}px`);
+      chapter.section.style.setProperty('--reading-height', `${sectionHeight}px`);
     });
     finalChapter.style.setProperty('--final-height', `${Math.max(0, viewH - footer.offsetHeight)}px`);
     measureGeometry();
@@ -254,7 +276,26 @@
     // Hero dims as About rises over it: the mirror of About's entering curve.
     setVar(hero, '--hero-opacity', boundaryOpacity(geo.hero, y, { enter: false }));
     setVar(stage, '--work-opacity', boundaryOpacity(geo.work, y));
-    readingChapters.forEach(({ hold }, index) => setVar(hold, '--reading-opacity', boundaryOpacity(geo.reading[index], y)));
+    readingChapters.forEach((chapter, index) => {
+      setVar(chapter.hold, '--reading-opacity', boundaryOpacity(geo.reading[index], y));
+      if (!chapter.staged) return;
+      // Cards hand off across the held stretch, with half the hold before the first
+      // swap and half after the last.
+      const count = chapter.items.length - 1;
+      const start = geo.reading[index].top - geo.navBottom + viewH * READING_HOLD / 2;
+      const at = clamp((y - start) / (chapter.itemStep * count)) * count;
+      chapter.items.forEach((item, i) => {
+        const opacity = settle((PANEL_HOLD + PANEL_FADE - Math.abs(at - i)) / PANEL_FADE);
+        setVar(item, '--item-opacity', opacity);
+        const lit = opacity > 0.002;
+        if (item.classList.contains('item-lit') !== lit) item.classList.toggle('item-lit', lit);
+      });
+      const active = Math.round(at);
+      if (active !== chapter.activeItem) {
+        chapter.activeItem = active;
+        chapter.items.forEach((item, i) => item.classList.toggle('item-active', i === active));
+      }
+    });
     setVar(finalContent, '--final-opacity', boundaryOpacity(geo.final, y, { leave: false }));
     const position = clamp((y - geo.workTop + stageTop) / (step * (workPanels.length - 1))) * (workPanels.length - 1);
     const active = stageEnabled ? Math.round(position) : -2;
@@ -290,7 +331,8 @@
   function goToWorkPanel(id) {
     const reading = readingChapters.find(chapter => chapter.section.id === id && chapter.enabled);
     if (reading) {
-      window.scrollTo({ top: reading.section.offsetTop - reading.pin + viewH * 0.3, behavior: 'smooth' });
+      // Land where the chapter is fully lit (and, for Experience, on the first card).
+      window.scrollTo({ top: geo.reading[readingChapters.indexOf(reading)].top - geo.navBottom + viewH * READING_HOLD / 2, behavior: 'smooth' });
       return true;
     }
     const index = workPanels.findIndex(panel => panel.id === id);
