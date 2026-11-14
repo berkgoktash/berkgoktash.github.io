@@ -630,7 +630,7 @@ a:focus-visible, button:focus-visible {
    share one cell on the right and hand off with brightness only. */
 .has-timeline-stage .timeline { display: grid; }
 .has-timeline-stage .timeline-item {
-  grid-area: 1 / 1; border-bottom: 1px solid var(--line);
+  grid-area: 1 / 1; align-content: start; border-bottom: 1px solid var(--line);
   opacity: var(--item-opacity, 0); visibility: hidden; will-change: opacity;
 }
 .has-timeline-stage .timeline-item.item-lit { visibility: visible; }
