@@ -40,13 +40,13 @@
     const bootScreen = boot.querySelector('.boot-screen');
     const prefix = 'READY.\n';
     const typed = 'LOAD "PORTFOLIO"';
-    const fullText = 'READY.\nLOAD "PORTFOLIO"\n\nPRESS PLAY ON TAPE\nOK\n\nSEARCHING\nFOUND PORTFOLIO';
 
     bootText.textContent = '';
     const textNode = document.createTextNode(prefix);
+    // The C64 cursor is a solid block exactly one character cell in size.
     const cursor = document.createElement('span');
-    cursor.className = 'blink';
-    cursor.textContent = '█';
+    cursor.className = 'boot-cursor';
+    cursor.setAttribute('aria-hidden', 'true');
     bootText.appendChild(textNode);
     bootText.appendChild(cursor);
 
@@ -57,10 +57,6 @@
     function skipBoot() {
       if (skipped) return;
       skipped = true;
-      if (rafId) cancelAnimationFrame(rafId);
-      bootTimers.forEach(id => clearTimeout(id));
-      document.removeEventListener('keydown', skipBoot);
-      boot.removeEventListener('click', skipBoot);
       finishBoot();
     }
     document.addEventListener('keydown', skipBoot, { once: true });
@@ -72,40 +68,61 @@
       boot.removeEventListener('click', skipBoot);
     };
 
-    /* rAF-driven typewriter — characters align with paint frames, no setTimeout jitter */
-    const CHAR_INTERVAL = 85; // ms per character, consistent rhythm
-    let i = 0;
-    let lastCharTime = null;
+    // Like a real C64, a keypress shows the cursor solid and restarts its blink,
+    // so it never vanishes mid-word while typing.
+    function restartBlink() {
+      cursor.style.animation = 'none';
+      void cursor.offsetWidth;
+      cursor.style.animation = '';
+    }
 
+    /* rAF-driven typewriter: characters align with paint frames */
+    const CHAR_INTERVAL = 85; // ms per character
+    let typedCount = 0;
+    let lastCharTime = null;
     function typeFrame(ts) {
-      if (lastCharTime === null) lastCharTime = ts;
+      if (lastCharTime === null) lastCharTime = ts - CHAR_INTERVAL;
       if (ts - lastCharTime >= CHAR_INTERVAL) {
-        textNode.nodeValue = prefix + typed.slice(0, i);
-        i++;
+        typedCount++;
+        textNode.nodeValue = prefix + typed.slice(0, typedCount);
+        restartBlink();
         lastCharTime = ts;
       }
-      if (i <= typed.length) {
+      if (typedCount < typed.length) {
         rafId = requestAnimationFrame(typeFrame);
       } else {
-        cursor.remove();
-        bootText.textContent = prefix + typed + '\n\nPRESS PLAY ON TAPE';
-        bootTimers.push(window.setTimeout(hideScreen, 900));
+        bootTimers.push(window.setTimeout(pressPlay, 350));
       }
     }
-
-    bootTimers.push(window.setTimeout(() => {
-      rafId = requestAnimationFrame(typeFrame);
-    }, 700));
-
+    function pressPlay() {
+      cursor.remove();
+      bootText.textContent = prefix + typed + '\n\nPRESS PLAY ON TAPE';
+      bootTimers.push(window.setTimeout(hideScreen, 900));
+    }
+    // As in the reference: the screen blanks to the border colour while the
+    // tape starts, then returns with OK / SEARCHING / FOUND before the site.
     function hideScreen() {
       bootScreen.classList.add('hidden');
-      bootTimers.push(window.setTimeout(showFull, 1200));
+      bootTimers.push(window.setTimeout(showFound, 1200));
     }
-    function showFull() {
-      bootText.textContent = fullText;
+    function showFound() {
+      bootText.textContent = prefix + typed + '\n\nPRESS PLAY ON TAPE\nOK\n\nSEARCHING\nFOUND PORTFOLIO';
       bootScreen.classList.remove('hidden');
       bootTimers.push(window.setTimeout(finishBoot, 1400));
     }
+
+    // Wait for the pixel font so the first frame is never a fallback font
+    // (capped, so a slow font request never holds the visitor).
+    const fontReady = document.fonts && document.fonts.load
+      ? Promise.race([document.fonts.load('16px "Press Start 2P"'), new Promise(r => setTimeout(r, 1200))])
+      : Promise.resolve();
+    const started = performance.now();
+    fontReady.catch(() => {}).then(() => {
+      if (bootFinished) return;
+      boot.classList.add('font-ready');
+      const wait = Math.max(0, 700 - (performance.now() - started));
+      bootTimers.push(window.setTimeout(() => { rafId = requestAnimationFrame(typeFrame); }, wait));
+    });
   } else {
     triggerHeroEntrance();
     if (boot) finishBoot();
@@ -132,7 +149,7 @@
   /* ---------- chapters scroll naturally; related work shares a sticky stage ---------- */
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const workPanels = ['approach', 'projects', 'skills'].map(id => document.getElementById(id));
+  const workPanels = ['projects', 'skills'].map(id => document.getElementById(id));
   const work = document.createElement('div'); work.id = 'work'; work.className = 'work-chapter';
   const stage = document.createElement('div'); stage.className = 'work-stage';
   workPanels[0].before(work); work.append(stage);
@@ -322,7 +339,7 @@
     if (current !== currentNav) {
       currentNav = current;
       navAnchors.forEach(link => {
-        const target = link.hash === '#approach' ? 'work' : link.hash.slice(1);
+        const target = link.hash === '#projects' ? 'work' : link.hash.slice(1);
         link.classList.toggle('active', target === current);
       });
     }
@@ -363,7 +380,7 @@
   /* ---------- soft pointer-follow lighting; idle when the pointer leaves ---------- */
   const pointerMedia = window.matchMedia('(hover: hover) and (pointer: fine)');
   const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-  document.querySelectorAll('.project-card, .research-blocks article, .skills-grid article, .contact-links a').forEach(el => {
+  document.querySelectorAll('.project-card, .skills-grid article, .contact-links a').forEach(el => {
     el.classList.add('hover-light');
     let frame = 0;
     let targetX = 0, targetY = 0, x = 0, y = 0, lastTime = 0;

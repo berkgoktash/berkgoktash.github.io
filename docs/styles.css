@@ -100,36 +100,45 @@ a { color: inherit; }
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 .boot.done { opacity: 0; visibility: hidden; }
-.boot-screen {
-  width: min(680px, calc(100% - 40px));
-  aspect-ratio: 4 / 3;
-  background: #3c3ccb;
-  border: 18px solid #8c8cf0;
-  padding: clamp(20px, 4vw, 40px);
-  display: flex;
-  flex-direction: column;
-  opacity: 1;
-  transition: opacity 0.18s ease;
+/* A C64 screen: 40 x 25 character cells inside a border, sized from one cell
+   unit. Rows touch (line-height 1) and every glyph fills its cell, as on the
+   real machine. Cells snap to 4px steps where supported to keep the pixel
+   font crisp. */
+.boot {
+  --cell-fit: clamp(6px, min(calc((100vw - 24px) / 48), calc((100vh - 24px) / 32)), 40px);
+  --cell: var(--cell-fit);
 }
-.boot-screen.hidden { opacity: 0; }
+@supports (width: round(down, 10px, 4px)) {
+  .boot { --cell: max(round(down, var(--cell-fit), 4px), min(var(--cell-fit), 12px)); }
+}
+.boot-screen {
+  background: #8c8cf0;
+  /* Border measured from the reference frame: 4 cells at the sides,
+     about 3.75 above and 3.25 below the 40 x 25 text area. */
+  padding: calc(var(--cell) * 3.75) calc(var(--cell) * 4) calc(var(--cell) * 3.25);
+}
+.boot-display {
+  width: calc(var(--cell) * 40); height: calc(var(--cell) * 25);
+  overflow: hidden; background: #3c3ccb; color: #a0a0f6;
+  font-family: "Press Start 2P", monospace; font-size: var(--cell); line-height: 1;
+  letter-spacing: 0; text-rendering: optimizeSpeed; -webkit-font-smoothing: none;
+}
+/* Text stays hidden until the pixel font has loaded, never a fallback font. */
+.boot:not(.font-ready) .boot-display { color: transparent; }
+/* While the tape loads, the C64 blanks the screen to the border colour. */
+.boot-screen.hidden .boot-display { background: transparent; color: transparent; }
 .boot-header {
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(0.8rem, 2vw, 1.15rem);
-  color: #c7c7f7;
-  text-align: center;
-  letter-spacing: 0.02em;
-  margin-bottom: clamp(20px, 5vw, 44px);
+  /* Row 2 of the screen, then three empty rows before READY. on row 6. */
+  margin: var(--cell) 0 calc(var(--cell) * 3); white-space: pre;
 }
 .boot-text {
-  margin: 0;
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(0.62rem, 1.5vw, 0.95rem);
-  line-height: 2.1;
-  color: #c7c7f7;
-  letter-spacing: 0.02em;
-  white-space: pre-wrap;
+  /* A little air between rows so the lines read apart. */
+  margin: 0; font: inherit; line-height: 1.3; white-space: pre-wrap;
 }
-.boot-text .blink { animation: blink 0.8s steps(1) infinite; }
+.boot-cursor {
+  display: inline-block; width: 1em; height: 1em; vertical-align: text-bottom;
+  background: currentColor; animation: blink 0.66s steps(1) infinite;
+}
 
 @keyframes blink { 50% { opacity: 0; } }
 /* Travels exactly one gradient period, so the loop restarts without a flip. */
@@ -215,12 +224,6 @@ a { color: inherit; }
 }
 .hero-name .line { display: block; }
 .hero-name .line-2 { color: var(--text); margin-top: 0.06em; }
-.caret {
-  display: inline-block; width: 0.5em; height: 0.82em;
-  margin-left: 0.08em; vertical-align: -0.06em;
-  background: var(--cyan); animation: blink 1.05s steps(1) infinite;
-  box-shadow: 0 0 16px rgba(109, 226, 255, 0.5);
-}
 .hero-role {
   font-family: var(--display); font-weight: 500;
   font-size: clamp(1.05rem, 2.4vw, 1.5rem);
@@ -229,7 +232,11 @@ a { color: inherit; }
 .hero-role .slash { color: var(--pink); }
 .hero-sub {
   font-family: var(--mono); font-size: 1.15rem; letter-spacing: 0.06em;
-  color: var(--muted); margin: 0; text-transform: uppercase;
+  color: var(--muted); margin: 0;
+}
+.hero-edu {
+  margin: var(--space-1) 0 0; color: var(--faint);
+  font-size: 0.95rem; letter-spacing: 0.02em;
 }
 .hero-summary {
   margin: var(--space-3) 0 0; color: var(--faint);
@@ -303,17 +310,17 @@ a { color: inherit; }
   max-width: 60ch; color: var(--muted); font-size: 1.08rem; line-height: 1.8;
   margin: 0;
 }
-/* A quiet personal note: smaller, fainter, and set apart from the bio. */
-.about-aside {
-  max-width: 60ch; margin: var(--space-3) 0 0; color: var(--faint);
+/* A quiet personal note closing the Contact chapter, just above the footer. */
+.aside-note {
+  margin: var(--space-5) 0 0; color: var(--faint);
   font-size: 0.95rem; line-height: 1.7;
 }
-.about-aside cite { font-style: normal; color: var(--muted); }
-.about-aside a {
+.aside-note cite { font-style: normal; color: var(--muted); }
+.aside-note a {
   color: var(--cyan); text-decoration: none; white-space: nowrap;
   border-bottom: 1px solid transparent; transition: border-color 0.3s ease;
 }
-.about-aside a:hover { border-bottom-color: currentColor; }
+.aside-note a:hover { border-bottom-color: currentColor; }
 
 /* experience timeline */
 .timeline { display: grid; gap: 0; }
@@ -352,41 +359,6 @@ a { color: inherit; }
   color: var(--muted); padding: 3px 10px;
   border: 1px solid var(--line); border-radius: 5px;
 }
-
-/* research */
-.research { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.research-intro {
-  max-width: 62ch; color: var(--muted); font-size: 1.15rem; line-height: 1.75;
-  margin: 0 0 40px;
-}
-.pipeline {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
-  padding: 26px; border: 1px solid var(--line-2); border-radius: 10px;
-  background: color-mix(in srgb, var(--bg) 50%, transparent);
-  margin-bottom: 56px;
-}
-.pipe-node {
-  font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.04em;
-  color: var(--text); padding: 8px 16px; border: 1px solid var(--line-2);
-  border-radius: 6px; background: var(--bg);
-}
-.pipe-node.accent {
-  color: var(--bg); background: var(--pink); border-color: var(--pink);
-  box-shadow: 0 0 24px rgba(255, 107, 181, 0.3);
-}
-.pipe-arrow { color: var(--cyan); font-size: 1.3rem; }
-
-.research-blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.research-blocks article {
-  padding: 36px; border: 1px solid var(--line); border-radius: 10px;
-  background: color-mix(in srgb, var(--bg) 40%, transparent);
-}
-.block-label {
-  display: inline-block; font-family: var(--mono); font-size: 1rem;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan);
-  margin-bottom: 14px;
-}
-.research-blocks p { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
 
 /* projects */
 .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
@@ -489,15 +461,12 @@ a { color: inherit; }
   .hero-portrait { max-width: 360px; }
   .scroll-cue { display: none; }
   .timeline-item { grid-template-columns: 1fr; gap: 16px; }
-  .research-blocks { grid-template-columns: 1fr; }
   .project-grid, .skills-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
   .section { padding: 90px 0; }
   .hero { padding-top: 96px; }
-  .pipeline { gap: 8px; padding: 18px; }
-  .pipe-node { font-size: 1.05rem; padding: 6px 11px; }
   .contact-links a { grid-template-columns: 1fr; gap: 4px; }
   .footer { flex-direction: column; gap: 10px; }
 }
@@ -537,7 +506,7 @@ a { color: inherit; }
   transition: color 0.3s ease, text-shadow 0.45s ease, border-color 0.4s ease, box-shadow 0.45s ease;
 }
 .nav-links a::after { transition: right 0.5s var(--ease), box-shadow 0.4s ease; }
-.tags span, .pipe-node {
+.tags span {
   transition: translate 0.45s var(--ease), border-color 0.4s ease, box-shadow 0.45s ease;
 }
 .contact-links a {
@@ -551,16 +520,12 @@ a { color: inherit; }
     transform: translateY(-6px);
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25), 0 0 24px rgba(255, 107, 181, 0.08);
   }
-  .research-blocks article:hover {
-    border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
-    box-shadow: 0 0 28px rgba(109, 226, 255, 0.07);
-  }
   .brand:hover, .footer a:hover, .nav-links a:hover {
     text-shadow: 0 0 18px rgba(109, 226, 255, 0.5);
   }
   .nav-links a:hover::after { box-shadow: 0 0 10px var(--pink); }
   .nav-cv:hover { box-shadow: 0 0 22px rgba(255, 107, 181, 0.18); }
-  .tags span:hover, .pipe-node:hover {
+  .tags span:hover {
     translate: 0 -2px;
     border-color: var(--cyan);
     box-shadow: 0 0 16px rgba(109, 226, 255, 0.13);
@@ -577,11 +542,11 @@ a:focus-visible, button:focus-visible {
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .hover-light::after { display: none; }
   .project-card.is-visible:hover, .project-card:hover { transform: none; }
-  .tags span:hover, .pipe-node:hover, .contact-links a:hover strong { translate: none; }
+  .tags span:hover, .contact-links a:hover strong { translate: none; }
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-enter { opacity: 1; transform: none; transition: none; }
-  .caret, .boot-text .blink, .scroll-line::before { animation: none; }
+  .boot-cursor, .scroll-line::before { animation: none; }
   .scanlines { display: none; }
 }
 
@@ -592,9 +557,7 @@ a:focus-visible, button:focus-visible {
 .work-stage:focus-within, .reading-stage:focus-within { opacity: 1; }
 .work-chapter .section { background: var(--bg); border: 0; }
 .work-chapter .section-title { margin-bottom: var(--space-3); }
-.work-chapter .research-intro { margin-bottom: var(--space-3); }
-.work-chapter .pipeline { margin-bottom: var(--space-3); padding: 18px; }
-.work-chapter .research-blocks article, .work-chapter .project-card,
+.work-chapter .project-card,
 .work-chapter .skills-grid article { padding: var(--space-3); }
 .work-chapter.has-stage { min-height: var(--chapter-height); }
 .has-stage .work-stage { position: sticky; top: var(--stage-top); display: grid; opacity: var(--work-opacity, 1); }
@@ -616,7 +579,11 @@ a:focus-visible, button:focus-visible {
   position: sticky; top: var(--reading-top); opacity: var(--reading-opacity, 1);
 }
 .has-reading-stage > .reading-stage:focus-within { opacity: 1; }
-.final-chapter { min-height: var(--final-height, auto); display: flex; align-items: center; }
+/* Contact sits on the footer: spare height goes above it, not between it and the footer. */
+.final-chapter {
+  min-height: var(--final-height, auto); display: flex; align-items: flex-end;
+  padding-bottom: var(--space-6);
+}
 /* Scroll-dimmed layers get their own compositor layer so brightness changes
    are GPU opacity only, with no repaint of the text underneath. */
 .hero { opacity: var(--hero-opacity, 1); will-change: opacity; }

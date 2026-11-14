@@ -24,8 +24,10 @@
   <!-- Commodore-style boot intro -->
   <div class="boot" id="boot" aria-hidden="true">
     <div class="boot-screen">
-      <div class="boot-header">**** BERK GÖKTAŞ ****</div>
-      <pre class="boot-text" id="boot-text"></pre>
+      <div class="boot-display">
+        <div class="boot-header">        ****  BERK GOKTAS  ****</div>
+        <pre class="boot-text" id="boot-text"></pre>
+      </div>
     </div>
   </div>
 
@@ -42,7 +44,7 @@
       <div class="nav-links" id="nav-links">
         <a href="#about">About</a>
         <a href="#experience">Experience</a>
-        <a href="#approach">Work &amp; Skills</a>
+        <a href="#projects">Work &amp; Skills</a>
         <a href="#contact">Contact</a>
         <a class="nav-cv" href="assets/Berk_Goktas_CV.pdf" download>CV</a>
       </div>
@@ -56,10 +58,11 @@
         <div class="hero-copy">
           <h1 id="hero-title" class="hero-name">
             <span class="line line-1 hero-enter">BERK</span>
-            <span class="line line-2 hero-enter">GÖKTAŞ<span class="caret" aria-hidden="true"></span></span>
+            <span class="line line-2 hero-enter">GÖKTAŞ</span>
           </h1>
           <p class="hero-role hero-enter">Cybersecurity Engineer</p>
-          <p class="hero-sub hero-enter">Boğaziçi University</p>
+          <p class="hero-sub hero-enter">MicroAGI</p>
+          <p class="hero-edu hero-enter">B.Sc. Computer Engineering, Boğaziçi University</p>
           <p class="hero-summary hero-enter">Turning security signals into action.<br>Building systems that hold up.</p>
           <div class="hero-actions hero-enter">
             <a class="button button-primary" href="#projects">Explore my work <span aria-hidden="true">↗</span></a>
@@ -91,10 +94,6 @@
           infrastructure. I turn raw telemetry into actionable detections and build automation
           that makes security operations more reliable and easier to investigate.
         </p>
-        <p class="about-aside reveal">
-          Off the clock: I won <cite>Who Wants to Be a Millionaire?</cite> (Türkiye) in 2024.
-          <a href="https://www.youtube.com/watch?v=3-JMGSNK4Do" target="_blank" rel="noreferrer">Watch the episode <span aria-hidden="true">↗</span></a>
-        </p>
       </div>
     </section>
 
@@ -107,11 +106,15 @@
         <div class="timeline">
           <article class="timeline-item reveal">
             <div class="timeline-meta">
-              <span class="timeline-date">2026 – Now</span>
+              <span class="timeline-date">Now</span>
               <span class="timeline-org">MicroAGI</span>
             </div>
             <div class="timeline-body">
-              <h3>Member of Technical Staff <span>· since September 2026</span></h3>
+              <h3>Member of Technical Staff</h3>
+              <ul>
+                <li>Building embodied AGI.</li>
+              </ul>
+              <div class="tags"><span>Security</span><span>IT</span><span>Full-Stack</span><span>Automation</span></div>
             </div>
           </article>
 
@@ -166,50 +169,10 @@
       </div>
     </section>
 
-    <!-- APPROACH -->
-    <section class="section research" id="approach" aria-labelledby="approach-title">
-      <div class="container">
-        <p class="section-index reveal">03 — Approach</p>
-        <h2 id="approach-title" class="section-title reveal">From telemetry to action.</h2>
-        <p class="research-intro reveal">
-          Effective security operations start with trustworthy log collection, useful detection
-          logic, and a clear path from an alert to an investigation. My experience covers that
-          workflow across QRadar, endpoint tooling, and response automation.
-        </p>
-
-        <div class="pipeline reveal" role="img" aria-label="Security workflow: Log sources to SIEM correlation to Detection rules to Incident triage to Response">
-          <span class="pipe-node">Log Sources</span>
-          <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">SIEM Correlation</span>
-          <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">Detection Rules</span>
-          <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node">Incident Triage</span>
-          <span class="pipe-arrow" aria-hidden="true">→</span>
-          <span class="pipe-node accent">Response</span>
-        </div>
-
-        <div class="research-blocks">
-          <article class="reveal">
-            <span class="block-label">Collect</span>
-            <p>Onboard and normalize log sources so analysts can trust the evidence behind each alert.</p>
-          </article>
-          <article class="reveal">
-            <span class="block-label">Detect</span>
-            <p>Write and tune QRadar rules and reports with AQL and Regex, aligned to MITRE ATT&amp;CK.</p>
-          </article>
-          <article class="reveal">
-            <span class="block-label">Respond</span>
-            <p>Investigate phishing, DDoS, and malware activity with endpoint and response tooling.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- PROJECTS -->
     <section class="section projects" id="projects" aria-labelledby="projects-title">
       <div class="container">
-        <p class="section-index reveal">04 — Projects</p>
+        <p class="section-index reveal">03 — Projects</p>
         <h2 id="projects-title" class="section-title reveal">Selected work.</h2>
 
         <div class="project-grid">
@@ -244,7 +207,7 @@
     <!-- SKILLS -->
     <section class="section skills" id="skills" aria-labelledby="skills-title">
       <div class="container">
-        <p class="section-index reveal">05 — Skills</p>
+        <p class="section-index reveal">04 — Skills</p>
         <h2 id="skills-title" class="section-title reveal">Toolkit.</h2>
 
         <div class="skills-grid">
@@ -271,7 +234,7 @@
     <!-- CONTACT -->
     <section class="section contact" id="contact" aria-labelledby="contact-title">
       <div class="container">
-        <p class="section-index reveal">06 — Contact</p>
+        <p class="section-index reveal">05 — Contact</p>
         <h2 id="contact-title" class="contact-title reveal">Let's talk.</h2>
         <ul class="contact-links reveal">
           <li><a href="mailto:berkgoktasedu@gmail.com"><span>Email</span><strong>berkgoktasedu@gmail.com</strong></a></li>
@@ -279,6 +242,10 @@
           <li><a href="https://github.com/berkgoktash" target="_blank" rel="noreferrer"><span>GitHub</span><strong>github.com/berkgoktash</strong></a></li>
           <li><a href="assets/Berk_Goktas_CV.pdf" download><span>Résumé</span><strong>Download CV ↓</strong></a></li>
         </ul>
+        <p class="aside-note reveal">
+          Off the clock: I won <cite>Who Wants to Be a Millionaire?</cite> (Türkiye) in 2024.
+          <a href="https://www.youtube.com/watch?v=3-JMGSNK4Do" target="_blank" rel="noreferrer">Watch the episode <span aria-hidden="true">↗</span></a>
+        </p>
       </div>
     </section>
   </main>
